@@ -613,7 +613,7 @@ header { position: relative; }
   var CLS = ['you', 'ally'];
   var TIER_KEYS = ['hb-tier', 'hb-tier-ally'];
   var st = { mon: START.mon, role: 'mon', cur: 0, ally: true, chars: START.chars.map(function (p) { return { pos: p, tier: 0, hits: 0 }; }) };
-  var HITS_MAX = 8;
+  var HITS_MAX = 10; // Au-delà de 10 coups reçus, le monstre ne change plus la confusion.
   try {
     st.chars.forEach(function (c, i) {
       var stier = parseInt(localStorage.getItem(TIER_KEYS[i]), 10);
@@ -639,7 +639,7 @@ header { position: relative; }
     c = c || cur();
     var t = TR[c.tier];
     var base = Math.round(t.shown / 90);
-    var k = (((base - c.hits) % 4) + 4) % 4;
+    var k = (((base + c.hits) % 4) + 4) % 4; // Chaque ligne au càc fait tourner la case à viser de 90° en sens contre horaire.
     var y = toIJ(c.pos), m = toIJ(st.mon);
     var r = rot([m[0] - y[0], m[1] - y[1]], k);
     return { t: t, k: k, tap: fromIJ(y[0] + r[0], y[1] + r[1]) };
