@@ -1234,7 +1234,7 @@ header { position: relative; }
       add(tr('ctxRemove'), 'mon', function () { st.extras.splice(xi, 1); });
     }
     if (!isMon && !isMe && !isO && !ex && !blocked[k]) {
-      if (!st.isComte) add(tr('ctxMon'), 'mon', function () { st.mon = k; });
+      add(tr('ctxMon'), 'mon', function () { st.mon = k; st.isComte = false; });
       add(tr('ctxComte'), 'comte', function () { st.mon = k; st.isComte = true; });
       add(fmt('ctxPlace', charName(st.cur)), CLS[st.cur], function () { me.pos = k; });
       if (o) add(fmt('ctxPlace', charName(oi)), CLS[oi], function () { o.pos = k; });
