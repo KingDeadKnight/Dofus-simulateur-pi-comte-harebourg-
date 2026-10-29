@@ -337,13 +337,11 @@ h2 { font-family: var(--font-head); font-weight: 700; font-size: 1.12rem; letter
 .eff { margin: 10px 0 0; font-size: 13px; color: var(--muted); }
 .eff strong { color: var(--brass); font-family: var(--font-display); font-size: 1.1rem; font-weight: 400; margin-left: 4px; }
 
-/* Coups au corps à corps : barre dans la colonne de la carte */
-.stage .hits { border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--bg) 50%, transparent); padding: 14px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 24px; align-items: center; }
-.stage .hits .step, .stage .hits h2, .stage .hits .note { grid-column: 1; }
-.stage .hits .note { margin: 2px 0 0; max-width: 62ch; }
-.stage .hits .stepper { grid-column: 2; grid-row: 1 / span 2; margin: 0; }
-.stage .hits .eff { grid-column: 2; grid-row: 3; margin: 6px 0 0; text-align: right; }
-@media (max-width: 700px) { .stage .hits { grid-template-columns: minmax(0, 1fr); } .stage .hits .stepper, .stage .hits .eff { grid-column: 1; grid-row: auto; text-align: left; } .stage .hits .stepper { margin-top: 10px; } }
+/* Coups au corps à corps : sous la vitalité, dans la colonne de gauche */
+.panel .hits { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line); padding-top: 14px; }
+.panel .hits .note { margin: 2px 0 0; }
+.panel .hits .stepper { flex-wrap: wrap; margin-top: 6px; }
+.panel .hits .eff { margin-top: 6px; }
 .stepper .reset { width: auto; height: 44px; padding: 0 14px; font-size: 13px; margin-left: 4px; }
 .stepper .reset:disabled { opacity: 0.35; }
 @media (max-width: 700px) { .stepper { flex-wrap: wrap; } }
@@ -464,8 +462,9 @@ header { position: relative; }
 .helpx { position: absolute; top: 16px; right: 16px; width: 36px; height: 36px; min-height: 0; padding: 0; border-radius: 50%; font-size: 20px; line-height: 1; }
 @media (max-width: 560px) { .helpbtn { top: 44px; right: 0; } .help { padding: 22px 18px; } }
 
-/* Mode compact automatique : écrans larges mais peu hauts (portables), pour voir la carte sans défiler */
-@media (min-width: 900px) and (max-height: 1000px) {
+/* Affichage compact sur ordinateur : page moins large, carte plafonnée, pour la voir sans défiler */
+@media (min-width: 900px) {
+  .wrap { max-width: 1240px; }
   body { padding-block: 14px 24px; }
   .wrap { gap: 14px; }
   h1 { font-size: 2.3rem; }
@@ -481,21 +480,19 @@ header { position: relative; }
   .layout { gap: 14px; }
   .panel { padding: 14px; gap: 12px; }
   .panel .note { display: none; }
+  .panel > .group:first-child { flex: none; }
   .panel .tiers { flex: none; gap: 6px; margin-top: 8px; }
   .panel .tier { flex: none; min-height: 0; padding: 4px 10px; }
   .tier { grid-template-columns: 50px 1fr; }
   .tier .heart { width: 48px; height: 44px; }
   .tier .tn { font-size: 1.1rem; }
   .stage { padding: 14px 16px; gap: 10px; }
-  .stage .hits { padding: 8px 14px; }
-  .stage .hits .note { display: none; }
-  .stage .hits .step { margin-bottom: 2px; }
   .stagehead h2 { font-size: 1.35rem; }
   .stagehead .step { margin-bottom: 2px; }
   .stagehead .hint { margin-top: 4px; padding: 6px 10px; font-size: 12.5px; }
   .toolbar { padding: 6px 12px; }
   .board { padding: 4px; }
-  .board svg { max-height: calc(100vh - 60px); }
+  .board svg { max-height: min(calc(100vh - 60px), 560px); }
   .legendbar .mapsw button { min-height: 32px; }
   .chars .step, .panel .step, .stage .step, .live { display: none; }
   .stagehead { align-items: center; }
@@ -554,6 +551,19 @@ header { position: relative; }
         <div class="tiers" id="tiers"></div>
       </div>
 
+      <div class="group hits">
+        <span class="step" data-i18n="step2">Étape 02</span>
+        <h2><span data-i18n="h2hits">Coups au corps à corps</span><span class="who" id="whoHits"></span></h2>
+        <p class="note" data-i18n="noteHits">Chaque ligne de dégâts déjà infligée au corps à corps fait pivoter ta confusion de 90° dans le sens inverse des aiguilles d'une montre.</p>
+        <div class="stepper" role="group" aria-label="Lignes de dégâts infligées au corps à corps" data-i18n-aria="hitsAria">
+          <button type="button" id="hitMinus" aria-label="Retirer une ligne" data-i18n-aria="minusAria">−</button>
+          <output id="hitN" aria-live="polite">0</output>
+          <button type="button" id="hitPlus" aria-label="Ajouter une ligne" data-i18n-aria="plusAria">+</button>
+          <span class="unit" id="hitUnit">ligne</span>
+          <button type="button" id="hitReset" class="reset" aria-label="Remettre le compteur à zéro" data-i18n-aria="resetAria" data-i18n="reset">Réinitialiser</button>
+        </div>
+        <p class="eff"><span data-i18n="effLabel">Rotation appliquée :</span> <strong id="eff">90° Horaire</strong></p>
+      </div>
       <div class="group result" hidden>
         <span class="step">Résultat</span>
         <h2>Rotation appliquée</h2>
@@ -570,19 +580,6 @@ header { position: relative; }
     </section>
 
     <section class="stage">
-      <div class="hits">
-        <span class="step" data-i18n="step2">Étape 02</span>
-        <h2><span data-i18n="h2hits">Coups au corps à corps</span><span class="who" id="whoHits"></span></h2>
-        <p class="note" data-i18n="noteHits">Chaque ligne de dégâts déjà infligée au corps à corps fait pivoter ta confusion de 90° dans le sens inverse des aiguilles d'une montre.</p>
-        <div class="stepper" role="group" aria-label="Lignes de dégâts infligées au corps à corps" data-i18n-aria="hitsAria">
-          <button type="button" id="hitMinus" aria-label="Retirer une ligne" data-i18n-aria="minusAria">−</button>
-          <output id="hitN" aria-live="polite">0</output>
-          <button type="button" id="hitPlus" aria-label="Ajouter une ligne" data-i18n-aria="plusAria">+</button>
-          <span class="unit" id="hitUnit">ligne</span>
-          <button type="button" id="hitReset" class="reset" aria-label="Remettre le compteur à zéro" data-i18n-aria="resetAria" data-i18n="reset">Réinitialiser</button>
-        </div>
-        <p class="eff"><span data-i18n="effLabel">Rotation appliquée :</span> <strong id="eff">90° Horaire</strong></p>
-      </div>
       <div class="stagehead">
         <div>
           <span class="step" data-i18n="step3">Étape 03</span>
