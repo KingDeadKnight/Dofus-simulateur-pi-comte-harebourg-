@@ -320,6 +320,9 @@ h2 { font-family: var(--font-head); font-weight: 700; font-size: 1.12rem; letter
 }
 @media (hover: hover) and (pointer: fine) { .toolbar .field.grow { display: none; } .toolbar { justify-content: flex-end; gap: 10px 24px; } }
 .stagehead .hint { background: none; border: 0; padding: 0; margin-top: 6px; font-size: 13.5px; }
+/* Hauteur fixe (2 lignes, 3 sur téléphone) : le texte change selon la situation sans faire bouger la carte */
+.stagehead .hint { display: flex; align-items: center; line-height: 1.5; height: calc(3em + 2px); overflow: hidden; }
+@media (max-width: 700px) { .stagehead .hint { height: calc(4.5em + 2px); } }
 .about { max-width: 78ch; color: var(--muted); font-size: 14px; line-height: 1.65; padding: 4px 4px 12px; }
 .about h2 { font-size: 0.95rem; color: var(--ink); margin-bottom: 8px; }
 .about p { margin: 0 0 10px; }
@@ -489,7 +492,7 @@ header { position: relative; }
   .stage { padding: 14px 16px; gap: 10px; }
   .stagehead h2 { font-size: 1.35rem; }
   .stagehead .step { margin-bottom: 2px; }
-  .stagehead .hint { margin-top: 4px; padding: 6px 10px; font-size: 12.5px; }
+  .stagehead .hint { margin-top: 4px; padding: 6px 10px; font-size: 12.5px; height: calc(3em + 14px); }
   .toolbar { padding: 6px 12px; }
   .board { padding: 4px; }
   .board svg { max-height: min(calc(100vh - 60px), 560px); }
@@ -497,7 +500,6 @@ header { position: relative; }
   .chars .step, .panel .step, .stage .step, .live { display: none; }
   .stagehead { align-items: center; }
   .stagehead > div:first-child { flex: 1; min-width: 0; }
-  .stagehead .hint { display: inline-block; margin-top: 4px; }
 }
 </style>
 
